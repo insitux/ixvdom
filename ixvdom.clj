@@ -31,6 +31,7 @@
     sans-tag))
 
 (function update-children&props parent old new index
+  ;TODO: handle property changes
   ;(match true
   ;  (dict? (1 old))
   ;    )
@@ -62,12 +63,4 @@
   ($mount mount)
   (var -view view)
   ($state (or $state state))
-  (-> state view (var -old-dom) vec->html (html mount)))
-
-(ixvdom-mount "body" @[:h2 {:onclick "blah"} [:span "Count: "]] 1)
-
-(function next
-  ($state (inc $state))
-  (update))
-
-(interval next 1000)
+  (-> $state view (var -old-dom) vec->html (html mount)))
