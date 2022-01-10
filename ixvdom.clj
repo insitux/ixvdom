@@ -1,11 +1,19 @@
 ;https://medium.com/@deathmood/how-to-write-your-own-virtual-dom-ee74acc13060
 
 (function from-key (-> % str sect))
+
+(function make-attr [k v]
+  (str
+    " "
+    (from-key k)
+    "=\""
+    (if (func? v) (str "ix('(" v ") (update)')") v)
+    "\""))
+
 (function vec->html v
   (if! (vec? v) (return v))
   (let [tag attr] v
        has-attr   (dict? attr)
-       make-attr  (fn [k v] (str " " (from-key k) "=\"" v "\""))
        attr       (if has-attr (map make-attr attr) "")
        tag        (from-key tag)
        body       (sect v (has-attr 2 1))
@@ -31,8 +39,7 @@
     sans-tag))
 
 (function update-children&props parent old new index
-  ;TODO: handle property changes
-  ;(match true
+  ;(match true           TODO update attributes reactively
   ;  (dict? (1 old))
   ;    )
   (-> @(update-walk (child-at parent index))
@@ -63,4 +70,4 @@
   ($mount mount)
   (var -view view)
   ($state (or $state state))
-  (-> $state view (var -old-dom) vec->html (html mount)))
+  (-> state view (var -old-dom) vec->html (html mount)))

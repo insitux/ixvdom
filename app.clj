@@ -1,13 +1,10 @@
 
-(function ix func
-  (str "ix('(" func ") (update)')"))
-
 (function view state
   [:section
     [:p "Count: " [:b state]]
-    [:p [:button {:onclick (ix increment)} "Increment"]]])
+    [:p [:button {:onclick increment} "Increment"]]])
 
-(ixvdom-mount "body" view 0)
+(ixvdom-mount "body" view $state)
 
 (function increment
   ($state (inc $state)))
