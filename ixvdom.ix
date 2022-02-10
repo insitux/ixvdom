@@ -1,6 +1,6 @@
 ;https://medium.com/@deathmood/how-to-write-your-own-virtual-dom-ee74acc13060
 
-(function from-key (-> % str sect))
+(var from-key @((key? %) (-> % str sect)))
 
 (function make-attr [k v]
   (str
