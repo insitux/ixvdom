@@ -3,10 +3,7 @@
 (var from-key @((key? %) (-> % str sect)))
 
 (function make-attr [k v]
-  (str
-    " "
-    (from-key k)
-    "=\""
+  (str " " (from-key k) "=\""
     (if (func? v) (str "ix('(" v ") (update)')") v)
     "\""))
 
@@ -19,15 +16,10 @@
        body       (sect v (has-attr 2 1))
        body       (map vec->html body))
   (if (["link" "input" "img" "meta"] tag)
-    (.. str "<" tag attr " />")
+    (.. str "<" tag attr "/>")
     (.. str "<" tag attr ">" body "</" tag ">")))
 
 (var -old-dom [])
-
-(function make-el x
- (if (vec? x)
-  (new-el (0 x) (vec->html (sect x)))
-  (new-text-el x)))
 
 (function el= old new
   (if (and (vec? old) (vec? new))
@@ -36,7 +28,7 @@
 
 (function children el
   (let sans-tag (sect el))
-  (if (dict? (0 sans-tag)) 
+  (if (dict? (0 sans-tag))
     (sect sans-tag)
     sans-tag))
 
@@ -44,27 +36,32 @@
   ;(match true           TODO update attributes reactively
   ;  (dict? (1 old))
   ;    )
-  (-> @(update-walk (child-at parent index))
-      #(map % (children old)
-              (children new)
-              (range (len old)))))
+  (var olds  (children old)
+       news  (children new)
+       child (child-at parent index)
+       max-n (max (len olds) (len news)))
+  (repeat @(update-walk child (% olds) (% news))
+          max-n))
+
+(function vec->el v
+  (html-el (vec->html v)))
 
 (function update-walk parent old new index
-(print parent " " old " " new " " index)
+  ;(print parent "    " old "    " new "    " index)
   (match true
     (! old)
-      (append-child parent (make-el new))
+      (append-child parent (vec->el new))
     (! new)
       (remove-child parent index)
     (! (el= old new))
-      (replace-child parent (make-el new) index)
+      (replace-child parent (vec->el new) index)
     (vec? old)
       (update-children&props parent old new index)))
 
 (function update
   (let new-dom (-view $state))
-  (print "old dom " -old-dom)
-  (print "new dom " new-dom)
+  ;(print "old dom " -old-dom)
+  ;(print "new dom " new-dom)
   (update-walk $mount -old-dom new-dom 0)
   (var -old-dom new-dom))
 
@@ -72,4 +69,4 @@
   ($mount mount)
   (var -view view)
   ($state (or $state state))
-  (-> state view (var -old-dom) vec->html (html mount)))
+  (-> state view (var -old-dom) vec->html (inner-html mount)))
