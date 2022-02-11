@@ -18,7 +18,9 @@
        tag        (from-key tag)
        body       (sect v (has-attr 2 1))
        body       (map vec->html body))
-  (.. str "<" tag attr ">" body "</" tag ">"))
+  (if (["link" "input" "img" "meta"] tag)
+    (.. str "<" tag attr " />")
+    (.. str "<" tag attr ">" body "</" tag ">")))
 
 (var -old-dom [])
 
